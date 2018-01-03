@@ -17,7 +17,7 @@ public class Test implements Runnable {
 
   private static final MediaType APPLICATION_JSON = MediaType.parse("application/json");
 
-  private static final String url = "https://api.huobipro.com/v1/order/orders/place";
+  private static final String url = "";
 
   private static String amount = "0";
 
@@ -148,7 +148,7 @@ public class Test implements Runnable {
         seconds = calendar.get(Calendar.SECOND);
 
         if (hours == 12 || hours == 9 || hours == 11 || hours == 13 || hours == 15 || hours == 17) {
-          if (minutes == controlMinute && seconds == 59) {
+          if (minutes == controlMinute && seconds == 57) {
             break;
           }
         }
