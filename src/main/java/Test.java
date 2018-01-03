@@ -19,11 +19,11 @@ public class Test implements Runnable {
 
   private static final String url = "https://api.huobipro.com/v1/order/orders/place";
 
-  private final static String amount = "11";
+  private static String amount = "0";
 
   private static String price = "1";
 
-  private final static String type = "sell-limit";
+  private static String type = "sell-limit";
 
   private final static String source = "web";
 
@@ -42,6 +42,14 @@ public class Test implements Runnable {
 
   public static void setPrice(String price) {
     Test.price = price;
+  }
+
+  public static void setAmount(String amount) {
+    Test.amount = amount;
+  }
+
+  public static void setType(String type) {
+    Test.type = type;
   }
 
   private void miaomiao() {
@@ -74,7 +82,9 @@ public class Test implements Runnable {
 
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("amount", amount);
-    jsonObject.put("price", price);
+    if (type.equals("sell-limit")) {
+      jsonObject.put("price", price);
+    }
     jsonObject.put("type", type);
     jsonObject.put("source", source);
     jsonObject.put("symbol", symbol);
@@ -87,6 +97,7 @@ public class Test implements Runnable {
     try {
       Response response = client.newCall(request).execute();
       String s = response.body().string();
+      System.out.println(s);
     } catch (Throwable e) {
       e.printStackTrace();
     }
@@ -104,15 +115,25 @@ public class Test implements Runnable {
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
-    Long accountId = Long.valueOf(args[0]);
-    String token = args[1];
-    String price = args[2];
-    Long sleeps = Long.valueOf(args[3]);
+    String type = args[0];
+    Long accountId = Long.valueOf(args[1]);
+    String token = args[2];
+    String amount = args[3];
+    String price = args[4];
+    Long sleeps = Long.valueOf(args[5]);
 
-    System.out.println(accountId);
-    System.out.println(token);
-    System.out.println(price);
-    System.out.println(sleeps);
+    //控制触发时间的
+    long controlMinute = Long.valueOf(args[6]);
+    long count = Long.valueOf(args[7]);
+
+    System.out.println("type:\t" + type);
+    System.out.println("accountId:\t" + accountId);
+    System.out.println("token:\t" + token);
+    System.out.println("amount:\t" + amount);
+    System.out.println("price:\t" + price);
+    System.out.println("sleeps:\t" + sleeps);
+    System.out.println("control minute:\t" + controlMinute);
+    System.out.println("count:\t" + count);
 
     Calendar calendar;
     int hours;
@@ -126,8 +147,8 @@ public class Test implements Runnable {
         minutes = calendar.get(Calendar.MINUTE);
         seconds = calendar.get(Calendar.SECOND);
 
-        if (hours == 10 || hours == 9 || hours == 11 || hours == 13 || hours == 15 || hours == 17) {
-          if (minutes == 27 && seconds == 59) {
+        if (hours == 12 || hours == 9 || hours == 11 || hours == 13 || hours == 15 || hours == 17) {
+          if (minutes == controlMinute && seconds == 59) {
             break;
           }
         }
@@ -142,11 +163,12 @@ public class Test implements Runnable {
     Date now = new Date();
     System.out.println("miaomiao\t" + ":\t"+ dateFormat.format(now));
 
-    //Test chrome188 = new Test(100149L, "fxY7kZCqAb8-PD0EKqPMDRp4HAz883FqmxdwkuG9gLUY-uOP2m0-gvjE57ad1qDF");
     Test test = new Test(accountId, token);
     test.setPrice(price);
+    test.setType(type);
+    test.setAmount(amount);
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < count; i++) {
       test.run();
     }
   }
