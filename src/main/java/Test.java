@@ -40,38 +40,38 @@ public class Test implements Runnable {
   private String hbProToken;
 
   public final static Long dashuId = 100149L;
-  public final static Long yatouId = 1221256L;
-  public final static Long geId = 1221256L;
-  public final static Long diId = 1221256L;
-  public final static Long y1Id = 1221256L;
-  public final static Long y2Id = 1221256L;
+  //public final static Long yatouId = 1221256L;
+  public final static Long geId = 1221955L;
+  public final static Long diId = 1221831L;
+  public final static Long y1Id = 1244341L;
+  public final static Long y2Id = 1244359L;
 
 
   private OkHttpClient client = new OkHttpClient();
 
   public static ThreadPoolExecutor THREADPOOL_EXECUTOR =
-      (ThreadPoolExecutor) Executors.newFixedThreadPool(6);
+      (ThreadPoolExecutor) Executors.newFixedThreadPool(18);
 
   static private Map<Long, String> tokenMap = new HashMap<>();
 
   static {
     // 大叔
-    tokenMap.put(100149L, "JO3Qbhh_zhsKeK-MPhbD-i16GbtS36WTS8qL2ZAZxWwY-uOP2m0-gvjE57ad1qDF");
+    tokenMap.put(dashuId, "JyBVtDRTarYbIR8yUXfANh9Ct1BIR08Zf4zSbcKejfYY-uOP2m0-gvjE57ad1qDF");
 
     // 丫头
-    tokenMap.put(1221256L, "k4zUzgqr05s9Q2rpd1eRGx402nEAYluJOa2blRvprBEY-uOP2m0-gvjE57ad1qDF");
-
-    // 丫1
-    tokenMap.put(1244341L, "u7O_WKrdUWOwrc75Zsy1AbasRjFrczd_JGJOSxBaydIY-uOP2m0-gvjE57ad1qDF");
-
-    // 丫2
-    tokenMap.put(1244359L, "R1OXEYW994N9-y_qbhsnUaJ1KHAGlG8sDC1mhLHQHI0Y-uOP2m0-gvjE57ad1qDF");
+    //tokenMap.put(yatouId, "JRWXDWOKDBcCzZ_7LXazUVsU0iMuxMMpQIKN-IWSObIY-uOP2m0-gvjE57ad1qDF");
 
     // 哥
-    tokenMap.put(1221256L, "k4zUzgqr05s9Q2rpd1eRGx402nEAYluJOa2blRvprBEY-uOP2m0-gvjE57ad1qDF");
+    tokenMap.put(geId, "LZoJZacHwQq4MKl0S9ENMADckCONKG66e1yEUKLPeZQY-uOP2m0-gvjE57ad1qDF");
 
     // 弟
-    tokenMap.put(1221256L, "k4zUzgqr05s9Q2rpd1eRGx402nEAYluJOa2blRvprBEY-uOP2m0-gvjE57ad1qDF");
+    tokenMap.put(diId, "w6wndnE80VgQNbZklYmdKAdjpFe-Ko0lH_2anaGqf-gY-uOP2m0-gvjE57ad1qDF");
+
+    // y1
+    tokenMap.put(y1Id, "IcdlWO5hBrR9diGc2ywOjxZyTpOXRwwi2e3Dqdl03vsY-uOP2m0-gvjE57ad1qDF");
+
+    // y2
+    tokenMap.put(y2Id, "cdhVchCKBiTDmAo79DY--e1m7nf8I7abJNXNxWnQhM0Y-uOP2m0-gvjE57ad1qDF");
   }
 
   public Test(Long accountId, String hbProToken, String type, String amount, Long sleep) {
@@ -144,19 +144,27 @@ public class Test implements Runnable {
 
     Date now = new Date();
     System.out.println("miaomiao\t" + accountId + ":\t"+ dateFormat.format(now));
-    miaomiao();
+    try {
+      miaomiao();
+    } catch (Throwable e) {
+
+    }
     now = new Date();
     System.out.println(dateFormat.format(now));
   }
 
   public static void main(String[] args) throws IOException, InterruptedException {
 
+    Long type = Long.valueOf(args[0]);
+
     //控制测试启动的时、分
-    long controlHour = Long.valueOf(args[0]);
-    long controlMinute = Long.valueOf(args[1]);
+    long controlHour = Long.valueOf(args[1]);
+    long controlMinute = Long.valueOf(args[2]);
 
     //延迟启动时间
-    Long sleeps = Long.valueOf(args[2]);
+    Long sleeps = Long.valueOf(args[3]);
+    Long count = Long.valueOf(args[4]);
+
 
     Calendar calendar;
     int hours;
@@ -186,50 +194,26 @@ public class Test implements Runnable {
     Date now = new Date();
     System.out.println("begin add task:\t"+ dateFormat.format(now) + "-------------------------");
 
-    Long start = 0L;
-    maker(Test.dashuId, start);
-    maker(Test.yatouId, start + 3L);
-    maker(Test.y1Id, start + 6L);
-    //maker(Test.diId, start + 9L);
-   // maker(Test.geId, start + 12L);
-    maker(Test.y2Id, start + 15L);
+    Long start = 1L;
+    for (int i=0; i < count; i++) {
+      if (type == 1) {
+        maker(Test.dashuId, start);
+        maker(Test.y2Id, start);
+        //maker(Test.yatouId, start);
+        maker(Test.y1Id, start);
+        maker(Test.diId, start);
+        maker(Test.geId, start);
+      }
 
-    taker(Test.dashuId, start + 5L);
-    taker(Test.yatouId, start + 8L);
-    taker(Test.y1Id, start + 11L);
-    //taker(Test.diId, start + 14L);
-    //taker(Test.geId, start + 17L);
-    taker(Test.y2Id, start + 20L);
-
-    // 第二次下单
-    maker(Test.dashuId, start + 21);
-    maker(Test.yatouId, start + 24L);
-    maker(Test.y1Id, start + 27L);
-    //maker(Test.diId, start + 30L);
-    //maker(Test.geId, start + 33L);
-    maker(Test.y2Id, start + 36L);
-
-    taker(Test.dashuId, start + 23L);
-    taker(Test.yatouId, start + 26L);
-    taker(Test.y1Id, start + 29L);
-    //taker(Test.diId, start + 32L);
-    //taker(Test.geId, start + 35L);
-    taker(Test.y2Id, start + 38L);
-
-    // 第三次下单
-    maker(Test.dashuId, start + 39);
-    maker(Test.yatouId, start + 42L);
-    maker(Test.y1Id, start + 45L);
-    //maker(Test.diId, start + 48L);
-    //maker(Test.geId, start + 51L);
-    maker(Test.y2Id, start + 54L);
-
-    taker(Test.dashuId, start + 41L);
-    taker(Test.yatouId, start + 44L);
-    taker(Test.y1Id, start + 47L);
-    //taker(Test.diId, start + 50L);
-    //taker(Test.geId, start + 53L);
-    taker(Test.y2Id, start + 56L);
+      if (type == 2) {
+        taker(Test.dashuId, start);
+        taker(Test.y2Id, start);
+        //taker(Test.yatouId, start);
+        taker(Test.y1Id, start);
+        taker(Test.diId, start);
+        taker(Test.geId, start);
+      }
+    }
   }
 
   static private void maker(Long accountId, Long sleep) {
@@ -242,7 +226,7 @@ public class Test implements Runnable {
   static private void taker(Long accountId, Long sleep) {
     String token = tokenMap.get(accountId);
 
-    Test test = new Test(accountId, token, "buy-market", "0.001", sleep);
+    Test test = new Test(accountId, token, "buy-market", "0.003", sleep);
     THREADPOOL_EXECUTOR.execute(test);
   }
 }
