@@ -2,6 +2,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import com.github.tsohr.JSONObject;
 import okhttp3.Headers;
@@ -23,33 +27,59 @@ public class Test implements Runnable {
 
   private static String price = "1";
 
-  private static String type = "sell-limit";
+  private String type = "sell-limit";
 
   private final static String source = "web";
 
-  private final static String symbol = "gnxeth";
+  private final static String symbol = "mdseth";
+
+  private Long sleep;
 
   private Long accountId;
 
   private String hbProToken;
 
+  public final static Long dashuId = 100149L;
+  public final static Long yatouId = 1221256L;
+  public final static Long geId = 1221256L;
+  public final static Long diId = 1221256L;
+  public final static Long y1Id = 1221256L;
+  public final static Long y2Id = 1221256L;
+
+
   private OkHttpClient client = new OkHttpClient();
 
-  public Test(Long accountId, String hbProToken) {
+  public static ThreadPoolExecutor THREADPOOL_EXECUTOR =
+      (ThreadPoolExecutor) Executors.newFixedThreadPool(6);
+
+  static private Map<Long, String> tokenMap = new HashMap<>();
+
+  static {
+    // 大叔
+    tokenMap.put(100149L, "JO3Qbhh_zhsKeK-MPhbD-i16GbtS36WTS8qL2ZAZxWwY-uOP2m0-gvjE57ad1qDF");
+
+    // 丫头
+    tokenMap.put(1221256L, "k4zUzgqr05s9Q2rpd1eRGx402nEAYluJOa2blRvprBEY-uOP2m0-gvjE57ad1qDF");
+
+    // 丫1
+    tokenMap.put(1244341L, "u7O_WKrdUWOwrc75Zsy1AbasRjFrczd_JGJOSxBaydIY-uOP2m0-gvjE57ad1qDF");
+
+    // 丫2
+    tokenMap.put(1244359L, "R1OXEYW994N9-y_qbhsnUaJ1KHAGlG8sDC1mhLHQHI0Y-uOP2m0-gvjE57ad1qDF");
+
+    // 哥
+    tokenMap.put(1221256L, "k4zUzgqr05s9Q2rpd1eRGx402nEAYluJOa2blRvprBEY-uOP2m0-gvjE57ad1qDF");
+
+    // 弟
+    tokenMap.put(1221256L, "k4zUzgqr05s9Q2rpd1eRGx402nEAYluJOa2blRvprBEY-uOP2m0-gvjE57ad1qDF");
+  }
+
+  public Test(Long accountId, String hbProToken, String type, String amount, Long sleep) {
     this.accountId = accountId;
     this.hbProToken = hbProToken;
-  }
-
-  public static void setPrice(String price) {
-    Test.price = price;
-  }
-
-  public static void setAmount(String amount) {
-    Test.amount = amount;
-  }
-
-  public static void setType(String type) {
-    Test.type = type;
+    this.type = type;
+    this.amount = amount;
+    this.sleep = sleep;
   }
 
   private void miaomiao() {
@@ -105,6 +135,13 @@ public class Test implements Runnable {
 
   @Override
   public void run() {
+
+    try {
+      Thread.sleep(sleep);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
     Date now = new Date();
     System.out.println("miaomiao\t" + accountId + ":\t"+ dateFormat.format(now));
     miaomiao();
@@ -112,28 +149,14 @@ public class Test implements Runnable {
     System.out.println(dateFormat.format(now));
   }
 
-
   public static void main(String[] args) throws IOException, InterruptedException {
 
-    String type = args[0];
-    Long accountId = Long.valueOf(args[1]);
-    String token = args[2];
-    String amount = args[3];
-    String price = args[4];
-    Long sleeps = Long.valueOf(args[5]);
+    //控制测试启动的时、分
+    long controlHour = Long.valueOf(args[0]);
+    long controlMinute = Long.valueOf(args[1]);
 
-    //控制触发时间的
-    long controlMinute = Long.valueOf(args[6]);
-    long count = Long.valueOf(args[7]);
-
-    System.out.println("type:\t" + type);
-    System.out.println("accountId:\t" + accountId);
-    System.out.println("token:\t" + token);
-    System.out.println("amount:\t" + amount);
-    System.out.println("price:\t" + price);
-    System.out.println("sleeps:\t" + sleeps);
-    System.out.println("control minute:\t" + controlMinute);
-    System.out.println("count:\t" + count);
+    //延迟启动时间
+    Long sleeps = Long.valueOf(args[2]);
 
     Calendar calendar;
     int hours;
@@ -147,7 +170,7 @@ public class Test implements Runnable {
         minutes = calendar.get(Calendar.MINUTE);
         seconds = calendar.get(Calendar.SECOND);
 
-        if (hours == 12 || hours == 9 || hours == 11 || hours == 13 || hours == 15 || hours == 17) {
+        if (hours == controlHour || hours == 9 || hours == 11 || hours == 13 || hours == 15 || hours == 17) {
           if (minutes == controlMinute && seconds == 57) {
             break;
           }
@@ -161,15 +184,65 @@ public class Test implements Runnable {
     Thread.sleep(sleeps);
 
     Date now = new Date();
-    System.out.println("miaomiao\t" + ":\t"+ dateFormat.format(now));
+    System.out.println("begin add task:\t"+ dateFormat.format(now) + "-------------------------");
 
-    Test test = new Test(accountId, token);
-    test.setPrice(price);
-    test.setType(type);
-    test.setAmount(amount);
+    Long start = 0L;
+    maker(Test.dashuId, start);
+    maker(Test.yatouId, start + 3L);
+    maker(Test.y1Id, start + 6L);
+    //maker(Test.diId, start + 9L);
+   // maker(Test.geId, start + 12L);
+    maker(Test.y2Id, start + 15L);
 
-    for (int i = 0; i < count; i++) {
-      test.run();
-    }
+    taker(Test.dashuId, start + 5L);
+    taker(Test.yatouId, start + 8L);
+    taker(Test.y1Id, start + 11L);
+    //taker(Test.diId, start + 14L);
+    //taker(Test.geId, start + 17L);
+    taker(Test.y2Id, start + 20L);
+
+    // 第二次下单
+    maker(Test.dashuId, start + 21);
+    maker(Test.yatouId, start + 24L);
+    maker(Test.y1Id, start + 27L);
+    //maker(Test.diId, start + 30L);
+    //maker(Test.geId, start + 33L);
+    maker(Test.y2Id, start + 36L);
+
+    taker(Test.dashuId, start + 23L);
+    taker(Test.yatouId, start + 26L);
+    taker(Test.y1Id, start + 29L);
+    //taker(Test.diId, start + 32L);
+    //taker(Test.geId, start + 35L);
+    taker(Test.y2Id, start + 38L);
+
+    // 第三次下单
+    maker(Test.dashuId, start + 39);
+    maker(Test.yatouId, start + 42L);
+    maker(Test.y1Id, start + 45L);
+    //maker(Test.diId, start + 48L);
+    //maker(Test.geId, start + 51L);
+    maker(Test.y2Id, start + 54L);
+
+    taker(Test.dashuId, start + 41L);
+    taker(Test.yatouId, start + 44L);
+    taker(Test.y1Id, start + 47L);
+    //taker(Test.diId, start + 50L);
+    //taker(Test.geId, start + 53L);
+    taker(Test.y2Id, start + 56L);
+  }
+
+  static private void maker(Long accountId, Long sleep) {
+    String token = tokenMap.get(accountId);
+
+    Test test = new Test(accountId, token, "sell-market", "11", sleep);
+    THREADPOOL_EXECUTOR.execute(test);
+  }
+
+  static private void taker(Long accountId, Long sleep) {
+    String token = tokenMap.get(accountId);
+
+    Test test = new Test(accountId, token, "buy-market", "0.001", sleep);
+    THREADPOOL_EXECUTOR.execute(test);
   }
 }
